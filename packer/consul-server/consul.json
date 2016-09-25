@@ -1,0 +1,63 @@
+{
+    "variables": {
+        "aws_region": "eu-west-1",
+        "aws_build_vpc": null,
+        "aws_build_subnet": null,
+        "aws_public_ip": "false",
+        "aws_instance_type": "t2.micro",
+        "aws_distribution_user": null,
+
+        "aws_source_ami": null,
+        "aws_shared_account": "",
+
+        "distribution": null,
+        "ssh_pty": "true",
+
+        "role": null,
+        "consul_version": null
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+
+        "region": "{{ user `aws_region` }}",
+        "vpc_id": "{{ user `aws_build_vpc` }}",
+        "subnet_id": "{{ user `aws_build_subnet` }}",
+        "associate_public_ip_address": "{{user `aws_public_ip`}}",
+        "instance_type": "{{ user `aws_instance_type` }}",
+
+        "source_ami": "{{ user `aws_source_ami` }}",
+	    "ami_users": "{{ user `aws_shared_account` }}",
+
+        "ssh_username": "{{user `aws_distribution_user`}}",
+        "ssh_pty": "{{user `ssh_pty` }}",
+
+        "ami_name": "{{ user `role` }}-{{ user `distribution` }}-{{ timestamp }}",
+        "tags": {
+            "Name": "{{user `role`}}",
+            "SourceAmi": "{{user `aws_source_ami`}}",
+            "ConsulVersion": "{{user `consul_version`}}"
+        },
+        "run_tags": {
+            "Name": "Packer Builder {{user `role`}}-{{ user `distribution` }}"
+        }
+    }],
+
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "files",
+            "destination": "/tmp"
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "{{template_dir}}/scripts/install_consul_{{ user `distribution` }}.sh",
+                "{{template_dir}}/scripts/clean_{{ user `distribution` }}.sh"
+            ],
+            "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "environment_vars": [
+                "CONSUL_VERSION={{ user `consul_version`}}"
+            ]
+        }
+    ]
+}
