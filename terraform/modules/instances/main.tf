@@ -28,6 +28,11 @@ variable user_data {
   default = ""
 }
 
+variable instance_profile {
+  type = "string"
+  default = ""
+}
+
 variable private_zone_id {
   type    = "string"
   default = ""
@@ -65,6 +70,8 @@ resource "aws_instance" "instance" {
   subnet_id              = "${var.subnet[count.index]}"
   vpc_security_group_ids = ["${var.security_groups}"]
   user_data              = "${data.template_file.user_data.*.rendered[count.index]}\n${var.user_data}"
+
+  iam_instance_profile   = "${var.instance_profile}"
 
   tags {
     Name = "${var.name[count.index]}"
