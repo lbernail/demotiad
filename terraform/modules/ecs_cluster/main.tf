@@ -11,6 +11,11 @@ variable "ecs_servers" {
   default = [ "ecs0", "ecs1", "ecs2"]
 }
 
+variable "all_nodes_tasks" {
+  type = "list"
+  default = []
+}
+
 variable "private_host_zone" {
   type = "string"
 }
@@ -23,8 +28,8 @@ variable "private_domain_name" {
   type = "string"
 }
 
-variable "sg_ssh" {
-  type = "string"
+variable "sg_list" {
+  type = "list"
 }
 
 variable "cluster_name" {
@@ -139,6 +144,7 @@ resource "aws_iam_role_policy" "ecs" {
                 "ecs:RegisterContainerInstance",
                 "ecs:StartTelemetrySession",
                 "ecs:Submit*",
+                "ecs:StartTask",
                 "ecr:GetAuthorizationToken",
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
@@ -167,7 +173,7 @@ module "ecs_servers" {
   type            = "${var.ecs_server_type}"
   key             = "${var.ecs_key}"
   subnet          = "${var.subnets}"
-  security_groups = "${list(var.sg_ssh,aws_security_group.ecs.id)}"
+  security_groups = "${concat(var.sg_list,list(aws_security_group.ecs.id))}"
   user_data       = "${data.template_file.ecs_config.rendered}"
 
   instance_profile = "${aws_iam_instance_profile.ecs.id}"
@@ -182,5 +188,6 @@ data "template_file" "ecs_config" {
 
   vars {
     TF_ECS_CLUSTER = "${var.cluster_name}"
+    TF_ALL_NODES_TASKS = "${join(" ",var.all_nodes_tasks)}"
   }
 }

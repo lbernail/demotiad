@@ -10,6 +10,10 @@ variable "vpc_state_key" {
   type = "string"
 }
 
+variable "consul_state_key" {
+  type = "string"
+}
+
 variable "key_name" {
   type = "string"
 }
@@ -28,17 +32,28 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
+data "terraform_remote_state" "consul" {
+  backend = "s3"
+
+  config {
+    bucket = "${var.state_bucket}"
+    key    = "${var.consul_state_key}"
+    region = "${var.region}"
+  }
+}
+
 module ecs_cluster {
   source = "../modules/ecs_cluster"  
 
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}" 
-  sg_ssh = "${data.terraform_remote_state.vpc.sg_ssh}"
+  sg_list = "${list(data.terraform_remote_state.vpc.sg_ssh,data.terraform_remote_state.consul.sg_consul_server)}"
   subnets = "${data.terraform_remote_state.vpc.private_subnets}"
   ecs_key = "${var.key_name}" 
 
+  all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}" ]
+
   internal_ports = [ "80" ]
-  external_sources = [ 
-  ]
+  external_sources = []
 
   private_host_zone = "${data.terraform_remote_state.vpc.private_host_zone}"
   private_host_zone_reverse = "${data.terraform_remote_state.vpc.private_host_zone_reverse}"

@@ -93,3 +93,7 @@ output "private_host_zone" {
 output "private_host_zone_reverse" {
   value = "${module.private_dns.private_host_zone_reverse}"
 }
+
+output "dns_servers" {
+  value = "${module.private_dns.dns_servers}"
+}

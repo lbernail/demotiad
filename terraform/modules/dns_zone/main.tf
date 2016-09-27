@@ -37,3 +37,7 @@ output "private_host_zone" {
 output "private_host_zone_reverse" {
   value = "${aws_route53_zone.private_reverse.zone_id}"
 }
+
+output "dns_servers" {
+  value = "${list(cidrhost(var.vpc_cidr, "2")) }"
+}

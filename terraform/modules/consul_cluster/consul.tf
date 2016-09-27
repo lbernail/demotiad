@@ -212,3 +212,7 @@ output "consul_servers" {
 output "sg_consul_client" {
   value = "${aws_security_group.consul_client.id}"
 }
+
+output "sg_consul_server" {
+  value = "${aws_security_group.consul.id}"
+}

@@ -42,3 +42,16 @@ module consul_cluster {
   private_domain_name = "${data.terraform_remote_state.vpc.private_domain_name}"
 
 }
+
+output consul_servers {
+  value = ["${module.consul_cluster.consul_servers}"]
+}
+output consul_servers_ips {
+  value = ["${module.consul_cluster.consul_server_ips}"]
+}
+output sg_consul_client{
+  value = "${module.consul_cluster.sg_consul_client}"
+}
+output sg_consul_server{
+  value = "${module.consul_cluster.sg_consul_server}"
+}
