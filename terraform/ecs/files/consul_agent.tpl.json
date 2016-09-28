@@ -5,15 +5,14 @@
     "essential": true,
     "memory": 500,
     "environment" : [
-        { "name" : "CONSUL_ALLOW_PRIVILEGED_PORTS", "value" : "" }
+        { "name" : "CONSUL_ALLOW_PRIVILEGED_PORTS", "value" : "" },
+        { "name" : "CONSUL_BIND_INTERFACE", "value" : "eth0" },
+        { "name" : "CONSUL_CLIENT_INTERFACE", "value" : "docker0" }
     ],
     "command" : [ 
-        "consul",
         "agent",
         "-dns-port=53",
         "-recursor=${TF_DNS_SERVER}",
-        "-bind=${TF_BRIDGE_IP}",
-        "-client=${TF_BRIDGE_IP}",
         "-data-dir=/consul/data",
         "-retry-join=${TF_CONSUL_JOIN}"
     ]
