@@ -18,6 +18,11 @@ variable "key_name" {
   type = "string"
 }
 
+variable "ecs_type" {
+  type = "string"
+  default = "t2.small"
+}
+
 provider "aws" {
   region = "${var.region}"
 }
@@ -46,11 +51,13 @@ module ecs_cluster {
   source = "../modules/ecs_cluster"  
 
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}" 
+  ecs_server_type = "${var.ecs_type}"
+
   sg_list = "${list(data.terraform_remote_state.vpc.sg_ssh,data.terraform_remote_state.consul.sg_consul_server)}"
   subnets = "${data.terraform_remote_state.vpc.private_subnets}"
   ecs_key = "${var.key_name}" 
 
-  all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}" ]
+  all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}","${aws_ecs_task_definition.registrator.family}" ]
 
   internal_ports = [ "80" ]
   external_sources = []

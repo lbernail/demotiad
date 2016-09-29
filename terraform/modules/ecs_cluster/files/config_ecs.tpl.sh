@@ -2,7 +2,7 @@
 set -e
 
 cluster=${TF_ECS_CLUSTER}
-tasks=${TF_ALL_NODES_TASKS}
+tasks="${TF_ALL_NODES_TASKS}"
 
 echo ECS_CLUSTER=$cluster >> /etc/ecs/ecs.config
 start ecs
@@ -15,4 +15,5 @@ region=$${az:0:$${#az} - 1}
 for task in $tasks
 do
     aws ecs start-task --cluster $cluster --task-definition $task --container-instances $instance_arn --region $region
+    sleep 5
 done

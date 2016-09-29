@@ -1,0 +1,17 @@
+[
+  {
+    "name": "registrator",
+    "image": "gliderlabs/registrator",
+    "essential": true,
+    "memory": 100,
+    "mountPoints": [
+        {
+            "sourceVolume": "${TF_VOLUME_NAME}",
+            "containerPath": "/tmp/docker.sock"
+        }
+    ],
+    "command" : [ 
+        "consul://${TF_BRIDGE_IP}:8500"
+    ]
+  }
+]
