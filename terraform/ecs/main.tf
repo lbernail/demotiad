@@ -18,6 +18,11 @@ variable "key_name" {
   type = "string"
 }
 
+variable "repository_name" {
+  type = "string"
+  default = "demotiad"
+}
+
 variable "ecs_type" {
   type = "string"
   default = "t2.small"
@@ -46,6 +51,11 @@ data "terraform_remote_state" "consul" {
     region = "${var.region}"
   }
 }
+
+resource "aws_ecr_repository" "repo" {
+    name = "${var.repository_name}"
+}
+
 
 module ecs_cluster {
   source = "../modules/ecs_cluster"  
