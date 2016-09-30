@@ -1,0 +1,60 @@
+[
+  {
+    "name": "consultpml",
+    "image": "${TF_ACCOUNT}.dkr.ecr.${TF_REGION}.amazonaws.com/${TF_REPO}:${TF_TAG}",
+    "essential": true,
+    "memory": 100,
+    "command" : [
+        "consul-template",
+        "-consul",
+        "consul:8500",
+        "-template",
+        "/haproxy/haproxy.ctmpl:/haproxy/haproxy.cfg:docker kill -s HUP $(docker ps -q --filter 'name=proxy' --filter 'status=running') || echo 'No Haproxy yet'"
+    ],
+    "dnsServers": [
+       "${TF_BRIDGE_IP}" 
+    ],
+    "extraHosts": [
+        {
+            "hostname": "consul",
+            "ipAddress": "${TF_BRIDGE_IP}"
+        }
+    ],
+    "mountPoints": [
+        {
+            "sourceVolume": "${TF_VOLUME_NAME}",
+            "containerPath": "/var/run/docker.sock"
+        }
+    ]
+  },
+  {
+    "name": "proxy",
+    "image": "haproxy:alpine",
+    "essential": true,
+    "memory": 100,
+    "command" : [
+        "haproxy",
+        "-f",
+        "/haproxy/haproxy.cfg"
+    ],
+    "dnsServers": [
+       "${TF_BRIDGE_IP}" 
+    ],
+    "extraHosts": [
+        {
+            "hostname": "consul",
+            "ipAddress": "${TF_BRIDGE_IP}"
+        }
+    ],
+    "volumesFrom": [
+        {
+          "sourceContainer": "consultpml"
+        }
+    ],
+    "portMappings": [
+        {
+             "containerPort": 80
+        }
+    ]
+  }
+]

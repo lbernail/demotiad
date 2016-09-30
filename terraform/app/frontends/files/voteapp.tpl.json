@@ -1,0 +1,32 @@
+[
+  {
+    "name": "voteapp",
+    "image": "${TF_ACCOUNT}.dkr.ecr.${TF_REGION}.amazonaws.com/${TF_REPO}:${TF_TAG}",
+    "essential": true,
+    "memory": 100,
+    "command" : [
+        "python",
+        "app.py"
+    ],
+    "portMappings": [
+        {
+             "containerPort": 80
+        }
+    ],
+    "dnsServers": [
+       "${TF_BRIDGE_IP}" 
+    ],
+    "extraHosts": [
+        {
+            "hostname": "consul",
+            "ipAddress": "${TF_BRIDGE_IP}"
+        }
+    ],
+    "environment": [
+        { "name" : "CONSUL_HOST", "value" : "consul" },
+        { "name" : "COLOR", "value" : "${TF_COLOR}" },
+        { "name" : "VERSION", "value" : "${TF_TAG}" },
+        { "name" : "SERVICE_NAME", "value" : "vote${TF_COLOR}" }
+    ]
+  }
+]
