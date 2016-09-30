@@ -41,7 +41,7 @@ button.b{
   font-size: 14px;
 }
 
-#hostname{
+#message{
   position: absolute;
   bottom: 100px;
   right: 0;

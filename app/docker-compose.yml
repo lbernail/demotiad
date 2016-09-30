@@ -1,0 +1,70 @@
+version: "2"
+
+services:
+  consul:
+    image: consul
+    container_name: consul
+    ports:
+      - 8500:8500
+
+  registrator:
+    image: gliderlabs/registrator
+    container_name: registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: consul://consul:8500
+    depends_on:
+      - consul
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports: 
+      - "6379:6379"
+    depends_on:
+      - registrator
+
+  votegreen:
+    build: ./vote
+    image: demotiad/vote
+    command: python app.py
+    environment:
+      - "CONSUL_HOST=consul"
+      - "COLOR=green"
+      - "SERVICE_NAME=votegreen"
+    ports: 
+      - "8000:80"
+    volumes:
+      - ./vote:/app
+
+  voteblue:
+    build: ./vote
+    image: demotiad/vote
+    command: python app.py
+    environment:
+      - "CONSUL_HOST=consul"
+      - "COLOR=blue"
+      - "SERVICE_NAME=voteblue"
+    ports: 
+      - "8001:80"
+    volumes:
+      - ./vote:/app
+
+  consultmpl:
+    build: ./consultmpl
+    image: demotiad/consultmpl
+    container_name: consultmpl
+    command: consul-template -consul consul:8500 -template '/haproxy/haproxy.ctmpl:/haproxy/haproxy.cfg:docker kill -s HUP $$(docker ps -q --filter="name=proxy")'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - consul
+
+  proxy:
+    image: haproxy:alpine
+    container_name: proxy
+    volumes_from:
+      - consultmpl
+    command: haproxy -f /haproxy/haproxy.cfg
+    ports: 
+      - "8080:80"
