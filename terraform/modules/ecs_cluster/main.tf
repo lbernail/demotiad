@@ -191,3 +191,6 @@ data "template_file" "ecs_config" {
     TF_ALL_NODES_TASKS = "${join(" ",var.all_nodes_tasks)}"
   }
 }
+
+output cluster { value = "${var.cluster_name}" }
+output cluster_nodes { value = "${var.ecs_servers}" }
