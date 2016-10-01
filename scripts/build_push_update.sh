@@ -12,6 +12,9 @@ SHORT_COMMIT=${COMMIT:0:7}
 
 ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
 
+pwd
+ls -l
+
 echo "Building image"
 docker build -t $REPO_NAME:$SHORT_COMMIT $APP_DIR
 
