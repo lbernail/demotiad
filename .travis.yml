@@ -6,6 +6,10 @@ env:
   - GREEN_STATE_KEY=demotiad/frontgreen
   - APP_DIR=app/vote
   - REPO_NAME=demotiad/vote
+  - WEBSITE=tiad.awsdemo.d2-si.eu
+  - TERRAFORM_VERSION=0.7.4
+  - TOOLS_DIR=$HOME/tools
+  - TERRAFORM_DIR=terraform/app/frontends
   - secure: Z4tew9J/JMF4VXLDnBR7FLa9gYoGdmXx+Evi/WGO5nA0lEQ/XZeb3ZHhXwClDlLjjKkw6nv/wFmM+mWiss8DFf5hg+Y2vYwXLQznCcewbTirxCGgkDTYkUfNCxWxwqk6heXCzB6kBdcQgEojXJNn7Br68kxbdONBBE78iU3gP9D6YFkRsEZxIIZQCIFCMDJ/NqEAzbMTwegoWcGTqLeQJgDoCF0zi+hkOHyIv2QZvq4H9qg4QU4SaZaqp55h9fMBfWaq87/hPA/whrfcEN2gqy87EnH99wk5RVbSx7/2CfvJ3U0zNRpAuiM/92EJ0XAyZQ95kna85v0UtprzOdUgQYwwi93ses3ctn1CC2oyFL2hbCIRtbwoduiZlYuNhUeep3ZcNwSnqvr/sZEfdOOdDcRA0TODAeEcXKkAuB5AIgC+Aa4rkfOJXV9Hw1bYrb+Jt4AK/bBbpdjfDSr7XIEQmT7SWOpSP4t137uOjp7GQmu2MC7x1Qhj0q141zBGYD98Y+i+Im43yCWuiKUzRQvPAGxdCWGjoi8WpeAKPDx0IA7Wha9pztGojsMMBxnJyE2O2gPEi48pvOq0ROBSd7VwcYUdceeEfPGSsZKqqhstz1VlcZsWGB01UfhDvMOg6IUT6fU3V6U9hTbSkpDClN7rs7xSaT1Cupi11mQVwC4atB8=
   - secure: D3TUT6ri6K5D7ckqZXhiWvIocY85LaZ0iiP9lYqVj0Vm/D/zloYmT0J5UYGBPZ0FZeSq6kEnuNtqNYmswyViSuLc75mYjzpk6LVq1nSPPWjwPrXdeV7QSxgGsldFppXu6qUrtZrAjcXTGJrWobxRm+MxE+jM6DE/I6DXREMRxLTV8JTrAZfUC+lD1oomnXN7prMpFzes0y3QxM0AcGuQ/Bk0QTMHFuSLTpFhJRagYdLp+ZOhc0HMqB/Peu0xmWoqvYSXbAt8b4v8fU6ilIe60Ev+z0uxhBZyKlxRJkWq0ixBS4OxjxGkSOA4NjUB9HriLsJazij/cKa2OIUvGT6t00c+7wY5k82rLhCe2WRYVTql60qvYTdGt92ebTEn5WeOFOMTWA35HTPYpQqPao/aprtZijArk6KmUTIzWpwCszCIaO9eQ3UJyqy+G0haxOsV3KDYcA4CuxIU4X7KNFIaHwc/evoSevPFeP9bUCCU+R43V0FiZyQAohFgEntjEa8fdT9WAow+57QfJkUxuaZS290jwYHN4yzfAfNWgxJyN9F27FVOR7AITSutJFBSMeceaNciRNkRp9YA47SMn+44tAHNxA3cjeG7lYVwBKYJd5/IvoxwiF/w4fBX1/RXKOif6LJBDAxBtGtYXTAzawDHE3z5I0Qn+m9f5jA75ZrmFNE=
 
@@ -23,6 +27,8 @@ script:
 - export COMMIT_SUBJECT="$(git log --format=%s --no-merges -n 1)"
 
 before_deploy:
+- export PATH=$PATH:$TOOLS_DIR/bin
+- scripts/install_terraform.sh
 - pip install awscli
 
 deploy:

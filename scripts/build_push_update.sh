@@ -30,3 +30,28 @@ docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${SHORT_
 docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:latest
 
 echo "Getting current environment"
+HEADER_COLOR=$(curl -si http://$WEBSITE  | grep X-Color)
+if [ $? ]
+then
+    echo "Unable to detect site"
+    exit 0
+fi
+COLOR=${color#X-Color: }
+
+echo "Current deployement is $COLOR"
+if [[ "$COLOR" == "blue" ]]
+then
+    NEXT='green'
+    STATE_KEY=$GREEN_STATE_KEY
+else
+    NEXT='blue'
+    STATE_KEY=$BLUE_STATE_KEY
+fi
+
+echo "Updating $NEXT stack"
+pushd ${TRAVIS_BUILD_DIR}/${TERRAFORM_DIR}/${NEXT}
+rm -rf .terraform
+terraform remote config -backend=s3 -backend-config="bucket=$STATE_BUCKET" -backend-config="key=$STATE_KEY" -backend-config="region=$AWS_REGION"
+TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform plan
+TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform apply
+popd
