@@ -1,0 +1,34 @@
+env:
+  global:
+  - AWS_REGION=eu-west-1
+  - secure: a6Cll+xqEJ8occt5j76FhNgpgHzP6rp3GC4SQTq2UQd0aIEl/Xd7N0ChmGHwiUr3ehKchVdecI9Fy0KcEe9f8p96KlxiOkgLafS4CdAgY2+lNvu6VZdNLzWstGfBTXOZDJ2MedwTz2omVrKvEZNE5r4bz7ZelKtece8Jbg3gVNA=
+  - secure: F64+IuxUPz+dQCn4j/i84RxIuGCOS4C0XTQdxmzEHsEhB/3MyZ2jpI1ZDJBCJHQPcMEiOK5sSSxGD4M3Mab/HdVUELJV32qOsDw7ZYtr3zUevLOAtzh78M5M0vxatmlfZy6xy4v/p0iehaS3Zo82cQY1Ndepx+tutFnLGbHG+QA=
+  - STATE_BUCKET=tfstates
+  - BLUE_STATE_KEY=demotiad/frontblue
+  - GREEN_STATE_KEY=demotiad/frontgreen
+  - APP_DIR=vote/app
+  - REPO_NAME=demotiad/vote
+
+sudo: required
+
+language: python
+
+python:
+  - "2.7"
+
+services:
+  - docker
+
+script:
+  - export COMMIT_SUBJECT="$(git log --format=%s --no-merges -n 1)"
+
+before_deploy:
+  - pip install --user awscli
+
+deploy:
+  provider: script
+  script:
+    - scripts/build_push_update.sh 
+  on:
+    branch: master
+    condition: "$COMMIT_SUBJECT != *\"[no deploy]\"*"
