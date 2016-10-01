@@ -59,8 +59,7 @@ module ecs_cluster {
 
   all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}","${aws_ecs_task_definition.registrator.family}" ]
 
-  internal_ports = [ "80" ]
-  external_sources = []
+  external_ports = []
 
   private_host_zone = "${data.terraform_remote_state.vpc.private_host_zone}"
   private_host_zone_reverse = "${data.terraform_remote_state.vpc.private_host_zone_reverse}"
@@ -69,3 +68,5 @@ module ecs_cluster {
 }
 
 output cluster { value = "${module.ecs_cluster.cluster}"}
+output cluster_nodes { value = "${module.ecs_cluster.cluster_nodes}"}
+output sg_cluster_access { value = "${module.ecs_cluster.sg_cluster_access}"}

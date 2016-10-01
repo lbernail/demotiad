@@ -59,11 +59,15 @@ variable "ttl" {
   default = "300"
 }
 
-variable "internal_ports" {
-  type    = "list"
+variable "dynamic_ports" {
+  type    = "map"
+  default = {
+     min = "32678"
+     max = "61000"
+  }
 }
 
-variable "external_sources" {
+variable "external_ports" {
   type = "list"
 }
 
@@ -90,25 +94,42 @@ resource "aws_security_group" "ecs" {
   }
 }
 
-resource "aws_security_group_rule" "internal_ports" {
-  count             = "${length(var.internal_ports)}"
+resource "aws_security_group_rule" "internal_traffic" {
   type              = "ingress"
-  from_port         = "${var.internal_ports[count.index]}"
-  to_port           = "${var.internal_ports[count.index]}"
-  protocol          = "tcp"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
   security_group_id = "${aws_security_group.ecs.id}"
   self              = true
 }
 
-resource "aws_security_group_rule" "external_sources" {
-  count                    = "${length(var.external_sources)}"
+resource "aws_security_group_rule" "dynamic_ports" {
+  type              = "ingress"
+  from_port         = "${lookup(var.dynamic_ports,"min")}"
+  to_port           = "${lookup(var.dynamic_ports,"max")}"
+  protocol          = "tcp"
+  security_group_id = "${aws_security_group.ecs.id}"
+  source_security_group_id = "${aws_security_group.cluster_access.id}"
+}
+
+resource "aws_security_group_rule" "external_ports" {
+  count                    = "${length(var.external_ports)}"
   type                     = "ingress"
-  from_port                = "${lookup(var.external_sources[count.index],"port")}"
-  to_port                  = "${lookup(var.external_sources[count.index],"port")}"
+  from_port                = "${var.external_ports[count.index]}"
+  to_port                  = "${var.external_ports[count.index]}"
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.ecs.id}"
-  cidr_blocks = ["${lookup(var.external_sources[count.index],"src")}"]
+  source_security_group_id = "${aws_security_group.cluster_access.id}"
+}
 
+resource "aws_security_group" "cluster_access" {
+  name        = "${var.cluster_id}-cluster-access"
+  description = "Traffic to ECS cluster"
+  vpc_id      = "${var.vpc_id}"
+
+  tags {
+    Name = "${var.cluster_name} Cluster Access"
+  }
 }
 
 resource "aws_iam_role" "ecs" {
@@ -194,3 +215,4 @@ data "template_file" "ecs_config" {
 
 output cluster { value = "${var.cluster_name}" }
 output cluster_nodes { value = "${var.ecs_servers}" }
+output sg_cluster_access { value = "${aws_security_group.cluster_access.id}" }
