@@ -1,6 +1,9 @@
-variable bastion_distrib {
-    type = "string"
-    default = "debian-8.4"
+variable bastion_ami {
+    type = "map"
+    default {
+       distrib = "debian"
+       version = "debian-8"
+    }
 }
 
 variable bastion_instance_type {
@@ -12,6 +15,20 @@ variable key_name {
     type = "string"
 }
 
+variable "public_zone" {
+  type = "string"
+}
+
+variable "bastion_name" {
+  type = "string"
+  default = "bastion"
+}
+
+variable "bastion_ttl" {
+  type = "string"
+  default = "300"
+}
+
 module "ami" {
   source         = "../modules/ami"
 }
@@ -21,13 +38,15 @@ data "aws_ami" "bastion" {
 
   filter {
     name   = "name"
-    values = "${list(module.ami.basenames["${var.bastion_distrib}"])}"
+    values = "${list(module.ami.basenames[var.bastion_ami["version"]])}"
   }
 
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+
+  owners = "${list(module.ami.owners[var.bastion_ami["distrib"]])}"
 
 }
 
@@ -51,6 +70,23 @@ resource "aws_eip" "bastion" {
   vpc      = true
 }
 
+resource "aws_route53_record" "bastion" {
+    zone_id = "${var.public_zone}"
+    name = "${var.bastion_name}"
+    ttl = "${var.bastion_ttl}"
+    type = "A"
+    records = ["${aws_eip.bastion.public_ip}"]
+}
+
 output "bastion" {
+   value = "${aws_route53_record.bastion.fqdn}"
+}
+
+output "bastion_ip" {
    value = "${aws_eip.bastion.public_ip}"
 }
+
+output "public_zone" {
+   value = "${var.public_zone}"
+}
+
