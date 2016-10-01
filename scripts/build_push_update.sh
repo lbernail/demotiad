@@ -26,3 +26,5 @@ $(aws ecr login)
 echo "Pushing image"
 docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${SHORT_COMMIT}
 docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:latest
+
+echo "Getting current environment"
