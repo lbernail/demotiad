@@ -39,7 +39,7 @@ fi
 COLOR=${HEADER_COLOR#X-Color: }
 
 echo "Current deployement is $COLOR"
-if [[ $COLOR == "blue" ]]
+if [ "$COLOR" == "blue" ]
 then
     NEXT='green'
     STATE_KEY=$GREEN_STATE_KEY
