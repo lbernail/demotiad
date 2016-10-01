@@ -36,7 +36,7 @@ then
     echo "Unable to detect site"
     exit 0
 fi
-COLOR=${color#X-Color: }
+COLOR=${HEADER_COLOR#X-Color: }
 
 echo "Current deployement is $COLOR"
 if [[ $COLOR == "blue" ]]
