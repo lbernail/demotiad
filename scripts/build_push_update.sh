@@ -51,7 +51,8 @@ fi
 echo "Updating $NEXT stack"
 pushd ${TRAVIS_BUILD_DIR}/${TERRAFORM_DIR}/${NEXT}
 rm -rf .terraform
-terraform remote config -backend=s3 -backend-config="bucket=$STATE_BUCKET" -backend-config="key=$STATE_KEY" -backend-config="region=$AWS_REGION"
+export AWS_DEFAULT_REGION=$AWS_REGION
+terraform remote config -backend=s3 -backend-config="bucket=$STATE_BUCKET" -backend-config="key=$STATE_KEY"
 TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform plan
 TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform apply
 popd
