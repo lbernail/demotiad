@@ -31,7 +31,7 @@ docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:latest
 
 echo "Getting current environment"
 HEADER_COLOR=$(curl -si http://$WEBSITE  | grep X-Color)
-if [ $? ]
+if [ $? -gt 0 ]
 then
     echo "Unable to detect site"
     exit 0
