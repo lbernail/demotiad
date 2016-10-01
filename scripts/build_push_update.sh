@@ -1,16 +1,16 @@
 #!/bin/bash
-set -e
+set -ex
 
-if [ -z $STATE_BUCKET -o -z $BLUE_STATE_KEY -o -z $GREEN_STATE_KEY -o -z $APP_DIR -o -z $REPO_NAME]
+if [ -z "$STATE_BUCKET" -o -z "$BLUE_STATE_KEY" -o -z "$GREEN_STATE_KEY" -o -z "$APP_DIR" -o -z "$REPO_NAME" ]
 then
-    echo 'No parameters'
+    echo 'Missing parameters'
     exit 0
 fi
 
 COMMIT=${TRAVIS_COMMIT:-'unknown'}
 SHORT_COMMIT=${COMMIT:0:7}
 
-ACCOUNT=aws sts get-caller-identity --query 'Account' --output text
+ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
 
 echo "Building image"
 docker build -t $REPO_NAME:$SHORT_COMMIT $APP_DIR
