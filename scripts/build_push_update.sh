@@ -23,7 +23,7 @@ docker tag $REPO_NAME:$SHORT_COMMIT ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.c
 docker images
 
 echo "Logging to ECR"
-$(aws ecr get-login)
+$(aws ecr --region $AWS_REGION get-login)
 
 echo "Pushing image"
 docker push ${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${SHORT_COMMIT}
