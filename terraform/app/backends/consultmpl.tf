@@ -15,10 +15,6 @@ variable "consultmpl_count" {
   default = "2"
 }
 
-variable "route53_zoneid" {
-  type = "string"
-}
-
 variable "dns_alias" {
   type = "string"
   default = "tiad"
@@ -132,7 +128,7 @@ resource "aws_security_group" "lb_sg" {
 resource "aws_alb" "front" {
   name            = "front-alb-ecs"
   subnets         = ["${data.terraform_remote_state.vpc.public_subnets}"]
-  security_groups = ["${aws_security_group.lb_sg.id}"]
+  security_groups = ["${aws_security_group.lb_sg.id}", "${data.terraform_remote_state.ecs.sg_cluster_access}"]
 }
 
 
@@ -156,7 +152,7 @@ resource "aws_alb_listener" "front_end" {
 }
 
 resource "aws_route53_record" "web" {
-    zone_id = "${var.route53_zoneid}"
+    zone_id = "${data.terraform_remote_state.vpc.public_zone}"
     name = "${var.dns_alias}"
     type = "A"
     alias {
