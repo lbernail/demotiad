@@ -23,7 +23,7 @@ script:
   - export COMMIT_SUBJECT="$(git log --format=%s --no-merges -n 1)"
 
 before_deploy:
-  - pip install --user awscli
+  - pip install awscli
 
 deploy:
   provider: script
