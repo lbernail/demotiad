@@ -68,13 +68,23 @@ def get_scores():
 
 def is_enabled_feature(feature,color):
     consul = get_consul()
-    index, key = consul.kv.get("features/"+color+"/"+feature)
+    index, key = consul.kv.get("features/"+feature+"/"+color)
 
     if key is not None:
         if key["Value"] == "enabled":
             return True
     
     return False
+
+def get_param(param,color,default):
+    consul = get_consul()
+    index, key = consul.kv.get("params/"+param+"/"+color)
+
+    if key is not None:
+        return key["Value"]
+    
+    return default
+
 
 
 @app.route("/", methods=['POST','GET'])
@@ -98,6 +108,7 @@ def hello():
 
     resp = make_response(render_template(
         'index.html',
+        title=get_param("title",color,option_a + " vs " + option_b),
         option_a=option_a,
         option_b=option_b,
         score_a=score_a,

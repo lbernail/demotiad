@@ -13,7 +13,7 @@ frontend localnodes
     mode http
     use_backend green if { hdr(X-Color) -i green }
     use_backend blue if { hdr(X-Color) -i blue }
-    default_backend {{ key_or_default "vote/color" "blue" }}
+    default_backend {{ key_or_default "routes/vote" "blue" }}
 
 backend green
     mode http
