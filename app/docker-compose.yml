@@ -6,13 +6,15 @@ services:
     container_name: consul
     ports:
       - 8500:8500
+    environment:
+      - SERVICE_IGNORE=true
 
   registrator:
     image: gliderlabs/registrator
     container_name: registrator
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
-    command: consul://consul:8500
+    command: -internal consul://consul:8500
     depends_on:
       - consul
 
@@ -32,8 +34,6 @@ services:
       - "CONSUL_HOST=consul"
       - "COLOR=green"
       - "SERVICE_NAME=votegreen"
-    ports: 
-      - "8000:80"
     volumes:
       - ./vote:/app
 
@@ -45,10 +45,6 @@ services:
       - "CONSUL_HOST=consul"
       - "COLOR=blue"
       - "SERVICE_NAME=voteblue"
-    ports: 
-      - "8001:80"
-    volumes:
-      - ./vote:/app
 
   consultmpl:
     build: ./consultmpl
