@@ -49,6 +49,8 @@ data "template_file" "redis" {
   template = "${file("${path.module}/files/redis.tpl.json")}"
 
   vars {
+      TF_REGION = "${var.region}"
+      TF_LOG_GROUP = "${data.terraform_remote_state.ecs.log_group}"
   }
 }
 

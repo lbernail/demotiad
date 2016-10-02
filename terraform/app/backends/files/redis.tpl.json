@@ -8,6 +8,14 @@
         {
              "containerPort": 6379
         }
-    ]
+    ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${TF_LOG_GROUP}",
+            "awslogs-region": "${TF_REGION}",
+            "awslogs-stream-prefix": "redis"
+        }
+    }
   }
 ]
