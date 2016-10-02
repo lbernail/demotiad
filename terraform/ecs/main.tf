@@ -57,8 +57,10 @@ module ecs_cluster {
   subnets = "${data.terraform_remote_state.vpc.private_subnets}"
   ecs_key = "${var.key_name}" 
 
-  all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}","${aws_ecs_task_definition.registrator.family}" ]
+  all_nodes_tasks = [ "${aws_ecs_task_definition.consul.family}","${aws_ecs_task_definition.registrator.family}","${aws_ecs_task_definition.cadvisor.family}" ]
 
+  sg_admin = "${data.terraform_remote_state.vpc.sg_admin}"
+  admin_ports = [ "8080" ]
   external_ports = []
 
   private_host_zone = "${data.terraform_remote_state.vpc.private_host_zone}"

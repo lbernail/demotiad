@@ -71,6 +71,15 @@ variable "external_ports" {
   type = "list"
 }
 
+variable "sg_admin" {
+  type    = "string"
+}
+
+variable "admin_ports" {
+  type    = "list"
+  default = []
+}
+
 data "aws_ami" "ecs" {
   most_recent = true
 
@@ -120,6 +129,16 @@ resource "aws_security_group_rule" "external_ports" {
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.ecs.id}"
   source_security_group_id = "${aws_security_group.cluster_access.id}"
+}
+
+resource "aws_security_group_rule" "admin_access" {
+  count                    = "${length(var.admin_ports)}"
+  type                     = "ingress"
+  from_port                = "${var.admin_ports[count.index]}"
+  to_port                  = "${var.admin_ports[count.index]}"
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.ecs.id}"
+  source_security_group_id = "${var.sg_admin}"
 }
 
 resource "aws_security_group" "cluster_access" {
