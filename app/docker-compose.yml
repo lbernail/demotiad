@@ -40,7 +40,6 @@ services:
   voteblue:
     build: ./vote
     image: demotiad/vote
-    command: python app.py
     environment:
       - "CONSUL_HOST=consul"
       - "COLOR=blue"
