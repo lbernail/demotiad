@@ -56,6 +56,7 @@ data "template_file" "voteapp" {
       TF_TAG="${var.voteapp_tag}"
       TF_BRIDGE_IP="${var.bridge_ip}"
       TF_COLOR="${var.color}"
+      TF_LOG_GROUP="${data.terraform_remote_state.ecs.log_group}"
   }
 }
 

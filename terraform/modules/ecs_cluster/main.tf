@@ -232,6 +232,11 @@ data "template_file" "ecs_config" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "ecs" {
+  name = "${var.cluster_name}"
+}
+
 output cluster { value = "${var.cluster_name}" }
 output cluster_nodes { value = "${var.ecs_servers}" }
+output log_group { value = "${var.cluster_name}" }
 output sg_cluster_access { value = "${aws_security_group.cluster_access.id}" }

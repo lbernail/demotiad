@@ -71,4 +71,5 @@ module ecs_cluster {
 
 output cluster { value = "${module.ecs_cluster.cluster}"}
 output cluster_nodes { value = "${module.ecs_cluster.cluster_nodes}"}
+output log_group { value = "${module.ecs_cluster.log_group}"}
 output sg_cluster_access { value = "${module.ecs_cluster.sg_cluster_access}"}

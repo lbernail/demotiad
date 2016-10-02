@@ -4,10 +4,6 @@
     "image": "${TF_ACCOUNT}.dkr.ecr.${TF_REGION}.amazonaws.com/${TF_REPO}:${TF_TAG}",
     "essential": true,
     "memory": 100,
-    "command" : [
-        "python",
-        "app.py"
-    ],
     "portMappings": [
         {
              "containerPort": 80
@@ -27,6 +23,14 @@
         { "name" : "COLOR", "value" : "${TF_COLOR}" },
         { "name" : "VERSION", "value" : "${TF_TAG}" },
         { "name" : "SERVICE_NAME", "value" : "vote${TF_COLOR}" }
-    ]
+    ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${TF_LOG_GROUP}",
+            "awslogs-region": "${TF_REGION}",
+            "awslogs-stream-prefix": "vote${TF_COLOR}"
+        }
+    }
   }
 ]
