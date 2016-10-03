@@ -8,7 +8,7 @@ ARG version
 ADD Dockerfile /Dockerfile
 LABEL eu.d2-si.python_version="2.7"
 LABEL eu.d2-si.application="vote"
-LABEL eu.d2-si.application="${version}"
+LABEL eu.d2-si.version="${version}"
 
 # Set the application directory
 WORKDIR /app
