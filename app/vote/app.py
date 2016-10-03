@@ -107,14 +107,13 @@ def hello():
     score_a = str(int(score_a))
     score_b = str(int(score_b))
 
-    #title = option_a + " vs " + option_b
+    title = option_a + " vs " + option_b
     #title = "Hello TIAD"
-    title=get_param("title",color,"Hello TIAD")
+    #title=get_param("title",color,"Hello TIAD")
 
-    message = ""
     message = "Served by stack " + color
-    if is_enabled_feature("containerid",color):
-        message=message+" on container "+ hostname
+    #if is_enabled_feature("containerid",color):
+    #    message=message+" on container "+ hostname
 
     resp = make_response(render_template(
         'index.html',

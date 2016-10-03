@@ -92,3 +92,11 @@ git commit -am "Dynamic parameters"
 git push
 
 # look at travis
+# look at consul / ecs
+
+# Use custom head to access blue code
+# Test: change title?
+
+# OK: change route
+
+# Toggle feature
