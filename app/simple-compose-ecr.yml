@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  vote:
+    image: 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:latest
+    ports:
+    - "8080:80"
