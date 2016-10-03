@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  vote:
+    build: ./vote
+    image: demotiad/vote
+    ports:
+    - "8080:80"
+    volumes:
+    - ./vote:/app
+
+    command: python app.py
+    
