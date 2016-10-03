@@ -1,3 +1,9 @@
+Preparation
+Clean images / containers locally
+Remove images from ECR
+Change code back to original (title = vim vs /emacs, no dyn param, no feature)
+
+========================
 docker build -t demotiad/vote:0.1 --build-arg version=0.1 vote
 docker tag demotiad/vote:0.1 demotiad/vote:latest
 docker images
