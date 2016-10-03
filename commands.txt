@@ -5,20 +5,6 @@ docker images
 docker inspect --format='{{json .ContainerConfig.Labels}}'  demotiad/vote:0.1 | jq .
 docker run --rm demotiad/vote:0.1 cat /Dockerfile
 
-docker-compose -f simple-compose.yml up
-# Go to website
-docker-compose -f simple-compose.yml down
-
-$(aws ecr get-login)
-docker tag demotiad/vote:0.1 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:0.1
-docker tag demotiad/vote:0.1 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:latest
-docker images
-
-docker push 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:0.1
-docker push 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:latest
-
-# Go to ECR console
-
 docker-compose -f devsimple-compose.yml up
 
 # Edit app.my change title to Hello TIAD
@@ -28,9 +14,6 @@ git push
 
 # Go to travis
 # Go to ECR
-
-docker rmi -f $(docker images -q)
-docker-compose -f simple-compose-ecr.yml up
 
 ##############
 # Create VPC
