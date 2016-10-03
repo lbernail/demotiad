@@ -22,3 +22,71 @@ docker push 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:latest
 docker-compose -f devsimple-compose.yml up
 
 # Edit app.my change title to Hello TIAD
+git status
+git commit -am "Change title"
+git push
+
+# Go to travis
+# Go to ECR
+
+docker rmi -f $(docker images -q)
+docker-compose -f simple-compose-ecr.yml up
+
+##############
+# Create VPC
+# Look at created resources
+# Create consul cluster
+# connect to bastion / consul0
+
+ssh admin@bastion.awsdemo.d2-si.eu -L 8500:consulagent:8500
+ssh consul0
+consul members
+
+# Look at consul UI
+
+# Create ECS cluster
+# Go to ECS UI
+# Go to consul UI
+
+ssh ec2-user@ecs0
+docker ps
+docker run -d -p 6379 redis
+
+# Go to consul UI
+ssh ec2-user@ecs1
+
+docker run --rm -it --dns=172.17.0.1 alpine ash
+ping redis.service.consul
+apk update
+apk add curl jq
+curl http://172.17.0.1:8500/v1/catalog/service/redis | jq .
+
+ssh ec2-user@ecs0
+docker rm -f ...
+# Go to consul UI and see service has disappeared
+
+
+# Deploy backends
+# Look at consul UI
+# Look at ECS services
+
+# Go to a host with haproxy (based on consul info)
+ssh ec2-user@ecsX
+docker exec <CID> cat /haproxy/haproxy.cfg
+docker exec <CID> cat /haproxy/haproxy.ctmpl
+
+# Let's change default route to green
+# Go to consul
+docker exec <CID> cat /haproxy/haproxy.cfg
+
+# Go to ALB / website
+
+# Deploy frontend green
+# Go to website
+# Go to consul
+# Look at haproxy
+
+# Edit app.py
+# uncomment
+git commit -am "Dynamic parameters"
+git push
