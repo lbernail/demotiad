@@ -90,3 +90,5 @@ docker exec <CID> cat /haproxy/haproxy.cfg
 # uncomment
 git commit -am "Dynamic parameters"
 git push
+
+# look at travis

@@ -109,7 +109,7 @@ def hello():
 
     #title = option_a + " vs " + option_b
     #title = "Hello TIAD"
-    title=get_param("title",color,title)
+    title=get_param("title",color,"Hello TIAD")
 
     message = ""
     message = "Served by stack " + color
