@@ -13,7 +13,7 @@ SHORT_COMMIT=${COMMIT:0:7}
 ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
 
 echo "Building image"
-docker build -t $REPO_NAME:$SHORT_COMMIT $APP_DIR
+docker build -t $REPO_NAME:$SHORT_COMMIT --build-arg version=$SHORT_COMMIT $APP_DIR
 
 echo "Tagging image"
 docker tag $REPO_NAME:$SHORT_COMMIT $REPO_NAME:latest

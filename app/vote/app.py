@@ -18,14 +18,17 @@ app = Flask(__name__)
 
 def get_consul():
     if not hasattr(g, 'consul'):
-        g.consul=consul.Consul(host=consul_host,port=8500)
+        if  consul_host is None:
+            g.consul = None
+        else:
+            g.consul=consul.Consul(host=consul_host,port=8500)
     return g.consul
 
 
 def get_redis():
     if not hasattr(g, 'redis'):
-        if consul_host is not None:
-            consul=get_consul()
+        consul=get_consul()
+        if consul is not None:
             (index,redis_svc) = consul.catalog.service('redis')
             redis_host = redis_svc[0]["ServiceAddress"]
             if redis_host == "":
@@ -68,22 +71,24 @@ def get_scores():
 
 def is_enabled_feature(feature,color):
     consul = get_consul()
-    index, key = consul.kv.get("features/"+feature+"/"+color)
 
-    if key is not None:
-        if key["Value"] == "enabled":
-            return True
+    if consul is not None:
+        index, key = consul.kv.get("features/"+feature+"/"+color)
+        if key is not None:
+            if key["Value"] == "enabled":
+                return True
     
     return False
 
-def get_param(param,color,default):
+def get_param(param,color,default_value):
     consul = get_consul()
-    index, key = consul.kv.get("params/"+param+"/"+color)
 
-    if key is not None:
-        return key["Value"]
+    if consul is not None:
+        index, key = consul.kv.get("params/"+param+"/"+color)
+        if key is not None:
+            return key["Value"]
     
-    return default
+    return default_value
 
 
 
@@ -102,13 +107,18 @@ def hello():
     score_a = str(int(score_a))
     score_b = str(int(score_b))
 
-    message = "Served by stack " + color
-    if is_enabled_feature("containerid",color):
-        message=message+" on container "+ hostname
+    #title = option_a + " vs " + option_b
+    title = "Hello TIAD"
+#    title=get_param("title",color,title)
+
+    message = ""
+#    message = "Served by stack " + color
+#    if is_enabled_feature("containerid",color):
+#        message=message+" on container "+ hostname
 
     resp = make_response(render_template(
         'index.html',
-        title=get_param("title",color,option_a + " vs " + option_b),
+        title=title,
         option_a=option_a,
         option_b=option_b,
         score_a=score_a,

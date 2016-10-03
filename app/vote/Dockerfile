@@ -1,6 +1,15 @@
 # Using official python runtime base image
 FROM python:2.7-alpine
 
+MAINTAINER laurent.bernaille@d2-si.eu
+
+ARG version
+
+ADD Dockerfile /Dockerfile
+LABEL eu.d2-si.python_version="2.7"
+LABEL eu.d2-si.application="vote"
+LABEL eu.d2-si.application="${version}"
+
 # Set the application directory
 WORKDIR /app
 
