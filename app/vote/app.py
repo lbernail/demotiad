@@ -107,8 +107,8 @@ def hello():
     score_a = str(int(score_a))
     score_b = str(int(score_b))
 
-    title = option_a + " vs " + option_b
-    # title = "Hello TIAD"
+    #title = option_a + " vs " + option_b
+    title = "Hello TIAD"
     #title=get_param("title",color,"Hello TIAD")
 
     message = "Served by stack " + color
