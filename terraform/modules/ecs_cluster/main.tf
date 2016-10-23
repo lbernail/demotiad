@@ -80,6 +80,11 @@ variable "admin_ports" {
   default = []
 }
 
+variable "efs_mount_point" {
+  type = "string"
+  default = "/mnt/efs"
+}
+
 data "aws_ami" "ecs" {
   most_recent = true
 
@@ -88,6 +93,7 @@ data "aws_ami" "ecs" {
     values = "${list(var.ecs_ami_basename)}"
   }
 }
+
 
 resource "aws_ecs_cluster" "cluster" {
   name = "${var.cluster_name}"
@@ -149,6 +155,39 @@ resource "aws_security_group" "cluster_access" {
   tags {
     Name = "${var.cluster_name} Cluster Access"
   }
+}
+
+resource "aws_security_group" "efs_access" {
+  name        = "${var.cluster_id}-efs-access"
+  description = "Traffic to EFS"
+  vpc_id      = "${var.vpc_id}"
+
+  ingress {
+      from_port = 2049
+      to_port = 2049
+      protocol = "tcp"
+      security_groups = ["${aws_security_group.ecs.id}"]
+  }
+
+  tags {
+    Name = "${var.cluster_name} EFS Access"
+  }
+}
+
+
+resource "aws_efs_file_system" "ecsfs" {
+  creation_token = "ecsfs-${var.cluster_name}"
+  tags {
+    Name = "ECS FS for ${var.cluster_name}"
+  }
+}
+
+resource "aws_efs_mount_target" "ecsmp" {
+  count = "3"
+  # should be length(var.subnets). Not possible with data sources variables today
+  file_system_id = "${aws_efs_file_system.ecsfs.id}"
+  subnet_id = "${var.subnets[count.index]}"
+  security_groups = [ "${aws_security_group.efs_access.id}" ]
 }
 
 resource "aws_iam_role" "ecs" {
@@ -229,6 +268,8 @@ data "template_file" "ecs_config" {
   vars {
     TF_ECS_CLUSTER = "${var.cluster_name}"
     TF_ALL_NODES_TASKS = "${join(" ",var.all_nodes_tasks)}"
+    TF_EFS_ID = "${aws_efs_file_system.ecsfs.id}"
+    TF_EFS_MOUNT_POINT = "${var.efs_mount_point}"
   }
 }
 
@@ -238,5 +279,6 @@ resource "aws_cloudwatch_log_group" "ecs" {
 
 output cluster { value = "${var.cluster_name}" }
 output cluster_nodes { value = "${var.ecs_servers}" }
+output efs_mount_point { value = "${var.efs_mount_point}" }
 output log_group { value = "${var.cluster_name}" }
 output sg_cluster_access { value = "${aws_security_group.cluster_access.id}" }

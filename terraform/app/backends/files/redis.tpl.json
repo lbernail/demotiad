@@ -1,12 +1,21 @@
 [
   {
     "name": "redis",
-    "image": "redis",
+    "image": "redis:alpine",
     "essential": true,
     "memory": 100,
+    "command": [
+        "--appendonly yes"
+    ],
     "portMappings": [
         {
              "containerPort": 6379
+        }
+    ],
+    "mountPoints": [
+        {
+            "sourceVolume": "${TF_REDIS_VOLUME}",
+            "containerPath": "/data"
         }
     ],
     "logConfiguration": {
