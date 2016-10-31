@@ -1,0 +1,28 @@
+[
+  {
+    "name": "proxy",
+    "image": "${TF_ACCOUNT}.dkr.ecr.${TF_REGION}.amazonaws.com/${TF_REPO}:${TF_TAG}",
+    "essential": true,
+    "memory": 100,
+    "command" : [
+        "consul-template",
+        "-consul=consul:8500",
+        "-template=/etc/haproxy/haproxy.ctmpl:/etc/haproxy/haproxy.cfg",
+        "-exec=haproxy -p /run/haproxy.pid -f /etc/haproxy/haproxy.cfg"
+    ],
+    "dnsServers": [
+       "${TF_BRIDGE_IP}" 
+    ],
+    "extraHosts": [
+        {
+            "hostname": "consul",
+            "ipAddress": "${TF_BRIDGE_IP}"
+        }
+    ],
+    "portMappings": [
+        {
+             "containerPort": 80
+        }
+    ]
+  }
+]

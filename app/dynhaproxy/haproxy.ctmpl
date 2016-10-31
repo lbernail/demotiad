@@ -1,0 +1,37 @@
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 503 /etc/haproxy/nobackend.http
+
+frontend localnodes
+    bind *:80
+    mode http
+    use_backend green if { hdr(X-Color) -i green }
+    use_backend blue if { hdr(X-Color) -i blue }
+    {{ $color := key_or_default "routes/vote" "blue" -}}
+    default_backend {{ if or (eq $color "blue") (eq $color "green") }}{{ $color }}{{ else }}blue{{ end }}
+
+backend green
+    mode http
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk
+    {{- range service "votegreen" }}
+    server {{.Node}} {{.Address}}:{{.Port}}{{end}}
+
+backend blue
+    mode http
+    balance roundrobin
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+    option httpchk
+    {{- range service "voteblue" }}
+    server {{.Node}} {{.Address}}:{{.Port}}{{end}}

@@ -1,11 +1,11 @@
 variable "docker_volume_name" { default = "docker" }
 
-variable "consultmpl_repo" {
+variable "dynhaproxy_repo" {
   type = "string"
-  default = "demotiad/consultmpl"
+  default = "demotiad/dynhaproxy"
 }
 
-variable "consultmpl_tag" {
+variable "dynhaproxy_tag" {
   type = "string"
   default = "latest"
 }
@@ -21,13 +21,13 @@ variable "dns_alias" {
 }
 
 data "template_file" "haproxy" {
-  template = "${file("${path.module}/files/haproxy.tpl.json")}"
+  template = "${file("${path.module}/files/dynhaproxy.tpl.json")}"
 
   vars {
       TF_ACCOUNT="${data.aws_caller_identity.current.account_id}",
       TF_REGION="${var.region}"
-      TF_REPO="${var.consultmpl_repo}"
-      TF_TAG="${var.consultmpl_tag}"
+      TF_REPO="${var.dynhaproxy_repo}"
+      TF_TAG="${var.dynhaproxy_tag}"
       TF_BRIDGE_IP="${var.bridge_ip}"
       TF_VOLUME_NAME = "${var.docker_volume_name}"
   }
@@ -36,15 +36,10 @@ data "template_file" "haproxy" {
 resource "aws_ecs_task_definition" "haproxy" {
   family = "haproxy"
   container_definitions = "${data.template_file.haproxy.rendered}"
-
-  volume {
-    name = "${var.docker_volume_name}"
-    host_path = "/var/run/docker.sock"
-  }
 }
 
 resource "aws_ecs_service" "haproxy" {
-  name = "consultmpl"
+  name = "haproxy"
   cluster = "${data.terraform_remote_state.ecs.cluster}"
   task_definition = "${aws_ecs_task_definition.haproxy.arn}"
   desired_count = "${var.haproxy_count}"
