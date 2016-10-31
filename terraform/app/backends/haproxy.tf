@@ -10,7 +10,7 @@ variable "consultmpl_tag" {
   default = "latest"
 }
 
-variable "consultmpl_count" {
+variable "haproxy_count" {
   type = "string"
   default = "2"
 }
@@ -20,8 +20,8 @@ variable "dns_alias" {
   default = "tiad"
 }
 
-data "template_file" "consultmpl" {
-  template = "${file("${path.module}/files/consultmpl.tpl.json")}"
+data "template_file" "haproxy" {
+  template = "${file("${path.module}/files/haproxy.tpl.json")}"
 
   vars {
       TF_ACCOUNT="${data.aws_caller_identity.current.account_id}",
@@ -33,9 +33,9 @@ data "template_file" "consultmpl" {
   }
 }
 
-resource "aws_ecs_task_definition" "consultmpl" {
-  family = "consultmpl"
-  container_definitions = "${data.template_file.consultmpl.rendered}"
+resource "aws_ecs_task_definition" "haproxy" {
+  family = "haproxy"
+  container_definitions = "${data.template_file.haproxy.rendered}"
 
   volume {
     name = "${var.docker_volume_name}"
@@ -43,11 +43,11 @@ resource "aws_ecs_task_definition" "consultmpl" {
   }
 }
 
-resource "aws_ecs_service" "consultmpl" {
+resource "aws_ecs_service" "haproxy" {
   name = "consultmpl"
   cluster = "${data.terraform_remote_state.ecs.cluster}"
-  task_definition = "${aws_ecs_task_definition.consultmpl.arn}"
-  desired_count = "${var.consultmpl_count}"
+  task_definition = "${aws_ecs_task_definition.haproxy.arn}"
+  desired_count = "${var.haproxy_count}"
 
   iam_role = "${aws_iam_role.ecs_service.name}"
 
