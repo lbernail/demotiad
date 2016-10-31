@@ -45,21 +45,22 @@ services:
       - "COLOR=blue"
       - "SERVICE_NAME=voteblue"
 
-  consultmpl:
-    build: ./consultmpl
-    image: demotiad/consultmpl
-    container_name: consultmpl
-    command: consul-template -consul consul:8500 -template '/haproxy/haproxy.ctmpl:/haproxy/haproxy.cfg:docker kill -s HUP $$(docker ps -q --filter="name=proxy")'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  dynhaproxy:
+    build: ./dynhaproxy
+    image: demotiad/dynhaproxy
+    container_name: dynhaproxy
+    command: /usr/local/bin/consul-template -consul=consul:8500 -template='/etc/haproxy/haproxy.ctmpl:/etc/haproxy/haproxy.cfg' -exec='haproxy -p /run/haproxy.pid -f /etc/haproxy/haproxy.cfg'
     depends_on:
       - consul
-
-  proxy:
-    image: haproxy:alpine
-    container_name: proxy
-    volumes_from:
-      - consultmpl
-    command: haproxy -f /haproxy/haproxy.cfg
     ports: 
       - "8080:80"
+
+  dynnginx:
+    build: ./dynnginx
+    image: demotiad/dynnginx
+    container_name: dynnginx
+    command: /usr/local/bin/consul-template -consul=consul:8500 -template='/etc/nginx/nginx.ctmpl:/etc/nginx/nginx.conf' -exec="nginx -g 'daemon off;'" -exec-reload-signal=SIGHUP
+    depends_on:
+      - consul
+    ports: 
+      - "9080:80"

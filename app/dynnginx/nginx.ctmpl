@@ -1,0 +1,30 @@
+events {
+    worker_connections  4096;  ## Default: 1024
+}
+
+http {
+    {{- with service "voteblue" }}
+    upstream blue {
+        {{- range service "voteblue" }}
+        server {{.Address}}:{{.Port}};{{end}}
+    }
+    {{ end }}
+
+    {{- with service "votegreen" }}
+    upstream green {
+        {{- range service "votegreen" }}
+        server {{.Address}}:{{.Port}};{{end}}
+    }
+    {{ end }}
+
+    server {
+        location / {
+            {{ $color := key_or_default "routes/vote" "blue" -}}
+            {{ with printf "vote%s" $color | service -}}
+            proxy_pass http://{{ $color }};
+            {{- else -}}
+            root /usr/share/nginx/html/;
+            {{- end }}
+        }
+    }
+}
