@@ -246,6 +246,7 @@ resource "aws_iam_instance_profile" "ecs" {
 }
 
 module "ecs_servers" {
+
   source          = "../instances"
   ami_id          = "${data.aws_ami.ecs.id}"
   name            = "${var.ecs_servers}"
@@ -263,6 +264,10 @@ module "ecs_servers" {
 }
 
 data "template_file" "ecs_config" {
+  # Explicit dependancy to avoid instance creation before the mount target is ready
+  # Could be done in the ecs_servers module when modules support depends_on
+  depends_on = [ "aws_efs_mount_target.ecsmp" ]
+
   template = "${file("${path.module}/files/config_ecs.tpl.sh")}"
 
   vars {

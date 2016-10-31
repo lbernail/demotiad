@@ -15,7 +15,14 @@ az=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone
 region=$${az:0:$${#az} - 1}
 
 echo "Mounting EFS"
-echo "$${az}.$${efs_id}.efs.$${region}.amazonaws.com:/ $${efs_mount_point} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0" >> /etc/fstab
+address="$${az}.$${efs_id}.efs.$${region}.amazonaws.com"
+
+echo "Waiting for resolution"
+while ! getent hosts $address
+do
+    sleep 5
+done
+echo "$${address}:/ $${efs_mount_point} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0" >> /etc/fstab
 mount /mnt/efs
 
 
