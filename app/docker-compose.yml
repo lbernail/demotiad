@@ -64,3 +64,6 @@ services:
       - consul
     ports: 
       - "9080:80"
+    environment:
+      - "SERVICE_443_IGNORE=true"
+      - "SERVICE_80_NAME=dynnginx"

@@ -3,6 +3,15 @@ events {
 }
 
 http {
+
+    map $http_x_color $color {
+        {{ $color := key_or_default "routes/vote" "blue" -}}
+        default "{{ if or (eq $color "blue") (eq $color "green") }}{{ $color }}{{ else }}blue{{ end }}";
+        "green" "green";
+        "blue" "blue";
+    }
+
+
     {{- with service "voteblue" }}
     upstream blue {
         {{- range service "voteblue" }}
@@ -19,12 +28,20 @@ http {
 
     server {
         location / {
-            {{ $color := key_or_default "routes/vote" "blue" -}}
-            {{ with printf "vote%s" $color | service -}}
-            proxy_pass http://{{ $color }};
-            {{- else -}}
-            root /usr/share/nginx/html/;
-            {{- end }}
+            if ($color = "blue") {
+                {{ with service "voteblue" -}}
+                proxy_pass http://blue;
+                {{- else -}}
+                root /usr/share/nginx/html/;
+                {{- end }}
+            }
+            if ($color = "green") {
+                {{ with service "votegreen" -}}
+                proxy_pass http://green;
+                {{- else -}}
+                root /usr/share/nginx/html/;
+                {{- end }}
+            }
         }
     }
 }
