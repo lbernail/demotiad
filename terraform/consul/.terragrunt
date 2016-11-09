@@ -1,0 +1,19 @@
+lock = {
+  backend = "dynamodb"
+  config {
+    aws_region = "eu-west-1"
+    table_name = "terragrunt_locks"
+    max_lock_retries = 360
+    state_file_id = "demotiad/consul"
+  }
+}
+
+remote_state = {
+  backend = "s3"
+  config {
+    region = "eu-west-1"
+    encrypt = "true"
+    bucket = "tfstates"
+    key = "demotiad/consul"
+  }
+}
