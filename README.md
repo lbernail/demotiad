@@ -1,3 +1,5 @@
+The python application used in the demo ("vote") is derived from the docker [example-voting-vote](https://github.com/docker/example-voting-app). Many thanks to them!
+
 ## How to use the code from this demo
 
 ### Build the vote application image and test it
@@ -18,7 +20,7 @@ This compose file simply starts the vote application and a redis container. You 
 
 <img src="images/site.png" alt="website" width="250">
 
-There is another compose file which mount the app directory to allow live edit of the python code (devsimple-compose.yml).
+There is another compose file which mounts the app directory to allow live edit of the python code (devsimple-compose.yml).
 
 Destroy the containers
 ```
@@ -31,7 +33,7 @@ Create necessary ECR repositories (dynnginx is a supporting image used later). Y
 aws ecr create-repository --repository-name demotiad/vote
 aws ecr create-repository --repository-name demotiad/dynnginx
 ```
-Build the dynnginx image and upload both to ECR
+Build the dynnginx image
 ```
 docker build -t demotiad/dynnginx app/dynnginx
 ```
@@ -59,15 +61,15 @@ The images are now available in ECR
 
 ## Build the infrastructure in aws
 ### Configure your remote states
-This repository uses [terragrunt](https://github.com/gruntwork-io/terragrunt) to configure terraform remote states (which wil be stored in S3). To use terragrunt, download it [here](https://github.com/gruntwork-io/terragrunt/releases) and update the .terragrunt files to use your own bucket (replace mybucket in the command)
+This repository uses [terragrunt](https://github.com/gruntwork-io/terragrunt) to configure terraform remote states (which wil be stored in S3). To use terragrunt, download it [here](https://github.com/gruntwork-io/terragrunt/releases) and update the .terragrunt files to use your own bucket (replace mybucket in the command):
 ```
 find terraform -name .terragrunt -exec sed -i 's/bucket =.*/bucket = "mybucket"/' {} \;
 ```
-Without terragrunt you will to configure the remote state for each terraform stack. For instance for the vpc
+Without terragrunt you will need to configure the remote states for each terraform stack. For instance for the vpc:
 ```
 terraform remote config -backend=s3 -backend-config="bucket=mybucket" -backend-config="key=demotiad/vpc
 ```
-In addition, to allow for cross-stack references we need to update the bucket used to store states in tfvar files (replace mybucket in the command)
+In addition, to allow for cross-stack references we need to update the bucket used to store states in tfvar files (replace mybucket in the command):
 ```
 find terraform -name 'terraform.tfvars' -exec sed 's/state_bucket =.*/state_bucket = "mybucket"/' {} \;
 ```
@@ -93,3 +95,4 @@ ssh admin@bastion.awsdemo.d2-si.eu -L 8500:consulagent:8500
 The consul UI is now available at [http://localhost:8500](http://localhost:8500)
 
 <img src="images/consului.png" alt="consului" width="400">
+
