@@ -112,8 +112,8 @@ def hello():
     #title=get_param("title",color,"Hello TIAD")
 
     message = "Served by stack " + color
-    #if is_enabled_feature("containerid",color):
-    #    message=message+" on container "+ hostname
+    if is_enabled_feature("containerid",color):
+        message=message+" on container "+ hostname
 
     resp = make_response(render_template(
         'index.html',
