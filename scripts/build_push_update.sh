@@ -43,17 +43,15 @@ echo "Current deployement is $COLOR"
 if [ "$COLOR" == "blue" ]
 then
     NEXT='green'
-    STATE_KEY=$GREEN_STATE_KEY
 else
     NEXT='blue'
-    STATE_KEY=$BLUE_STATE_KEY
 fi
 
 echo "Updating $NEXT stack"
 pushd ${TRAVIS_BUILD_DIR}/${TERRAFORM_DIR}/${NEXT}
 rm -rf .terraform
 export AWS_DEFAULT_REGION=$AWS_REGION
-terraform remote config -backend=s3 -backend-config="bucket=$STATE_BUCKET" -backend-config="key=$STATE_KEY"
+terraform init
 TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform plan
 TF_VAR_voteapp_tag=${SHORT_COMMIT} terraform apply
 popd
