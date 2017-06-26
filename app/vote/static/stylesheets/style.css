@@ -42,12 +42,15 @@ button.b{
 }
 
 #message{
-  position: absolute;
-  bottom: 100px;
-  right: 0;
-  left: 0;
   color: #8f9ea8;
   font-size: 24px;
+  width: 300px;
+  margin: 0 auto;
+  margin-top:150px;
+}
+
+#message img{
+  width: 300px;
 }
 
 #content-container{

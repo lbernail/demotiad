@@ -107,9 +107,13 @@ def hello():
     score_a = str(int(score_a))
     score_b = str(int(score_b))
 
-    title = "DEVOPS D-DAY"
+    title=get_param("title",color,"DEVOPS D-DAY")
 
     message = "Served by stack " + color
+    if is_enabled_feature("containerid",color):
+        message=message+" on container "+ hostname
+
+    display_banner = is_enabled_feature("banner",color)
 
     resp = make_response(render_template(
         'index.html',
@@ -119,6 +123,7 @@ def hello():
         score_a=score_a,
         score_b=score_b,
         message=message,
+        display_banner=display_banner,
         vote=vote
     ))
     resp.set_cookie('voter_id', voter_id)
