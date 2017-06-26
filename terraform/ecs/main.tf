@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = "tfstates"
+    key    = "demotiad/ecs"
+    region = "eu-west-1"
+  }
+}
+
 variable "region" {
   type = "string"
 }
