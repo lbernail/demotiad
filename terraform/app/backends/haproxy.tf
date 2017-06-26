@@ -17,7 +17,7 @@ variable "haproxy_count" {
 
 variable "dns_alias" {
   type = "string"
-  default = "tiad"
+  default = "summit"
 }
 
 data "template_file" "haproxy" {
