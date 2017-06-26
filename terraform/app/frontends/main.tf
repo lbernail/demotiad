@@ -34,6 +34,10 @@ variable "bridge_ip" {
   default = "172.17.0.1"
 }
 
+provider "aws" {
+  region = "${var.region}"
+}
+
 data "aws_caller_identity" "current" {}
 
 data "terraform_remote_state" "ecs" {
