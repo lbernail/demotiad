@@ -17,7 +17,6 @@ variable "voteapp_repo" {
 
 variable "voteapp_tag" {
   type = "string"
-  default = "latest"
 }
 
 variable "voteapp_count" {
