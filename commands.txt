@@ -46,9 +46,9 @@ ssh ec2-user@ecs1
 
 docker run --rm -it --dns=172.17.0.1 alpine ash
 ping redis.service.consul
-apk update
-apk add curl jq
+apk add --no-cache curl jq bind-tools
 curl http://172.17.0.1:8500/v1/catalog/service/redis | jq .
+dig -t SRV redis.service.consul
 
 ssh ec2-user@ecs0
 docker rm -f ...
@@ -61,14 +61,14 @@ docker rm -f ...
 
 # Go to a host with haproxy (based on consul info)
 ssh ec2-user@ecsX
-docker exec <CID> cat /haproxy/haproxy.cfg
-docker exec <CID> cat /haproxy/haproxy.ctmpl
+docker exec <CID> cat /etc/haproxy/haproxy.cfg
+docker exec <CID> cat /etc/haproxy/haproxy.ctmpl
 
-# Let's change default route to red
+# Let's change default route to green
 # Go to consul
-docker exec <CID> cat /haproxy/haproxy.cfg
+docker exec <CID> cat /etc/haproxy/haproxy.cfg
 
-# Remove red route
+# Remove green route
 
 # Go to ALB / website
 
