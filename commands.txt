@@ -64,13 +64,15 @@ ssh ec2-user@ecsX
 docker exec <CID> cat /haproxy/haproxy.cfg
 docker exec <CID> cat /haproxy/haproxy.ctmpl
 
-# Let's change default route to green
+# Let's change default route to red
 # Go to consul
 docker exec <CID> cat /haproxy/haproxy.cfg
 
+# Remove red route
+
 # Go to ALB / website
 
-# Deploy frontend green
+# Deploy frontend blue
 # Go to website
 # Go to consul
 # Look at haproxy

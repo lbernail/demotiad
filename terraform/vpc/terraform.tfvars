@@ -2,9 +2,9 @@ region = "eu-west-1"
 
 cidr_block = "10.255.0.0/16"
 
-vpc_name = "DEMO TIAD"
+vpc_name = "DEMO DDAY"
 
-domain = "demo.tiad"
+domain = "demo.dday"
 
 key_name = "aws-dev"
 
