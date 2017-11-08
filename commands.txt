@@ -66,9 +66,9 @@ docker exec <CID> cat /etc/haproxy/haproxy.ctmpl
 
 # Let's change default route to green
 # Go to consul
-docker exec <CID> cat /haproxy/haproxy.cfg
+docker exec <CID> cat /etc/haproxy/haproxy.cfg
 
-# Remove red route
+# Remove green route
 
 # Go to ALB / website
 
