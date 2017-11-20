@@ -1,0 +1,45 @@
+version: '2'
+services:
+  votegreen:
+    scale: 2
+    start_on_create: true
+  voteblue:
+    scale: 2
+    start_on_create: true
+  votelb:
+    scale: 2
+    start_on_create: true
+    lb_config:
+      certs: []
+      port_rules:
+      - hostname: votegreen
+        priority: 1
+        protocol: http
+        service: votegreen
+        source_port: 8080
+        target_port: 80
+      - hostname: voteblue
+        priority: 2
+        protocol: http
+        service: voteblue
+        source_port: 8080
+        target_port: 80
+      - priority: 3
+        protocol: http
+        service: voteblue
+        source_port: 8080
+        target_port: 80
+    health_check:
+      healthy_threshold: 2
+      response_timeout: 2000
+      port: 42
+      unhealthy_threshold: 3
+      initializing_timeout: 60000
+      interval: 2000
+      reinitializing_timeout: 60000
+  redis:
+    scale: 1
+    start_on_create: true
+  consul:
+    scale: 1
+    start_on_create: true
