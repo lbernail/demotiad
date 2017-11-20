@@ -1,0 +1,48 @@
+version: '2'
+services:
+  votegreen:
+    image: 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:green
+    environment:
+      COLOR: green
+      CONSUL_HOST: consul
+    stdin_open: true
+    tty: true
+    links:
+    - redis:redis
+    - consul:consul
+    labels:
+      io.rancher.container.pull_image: always
+  voteblue:
+    image: 722880817135.dkr.ecr.eu-west-1.amazonaws.com/demotiad/vote:blue
+    environment:
+      COLOR: blue
+      CONSUL_HOST: consul
+    stdin_open: true
+    tty: true
+    links:
+    - redis:redis
+    - consul:consul
+    labels:
+      io.rancher.container.pull_image: always
+  votelb:
+    image: rancher/lb-service-haproxy:v0.7.15
+    ports:
+    - 8080:8080/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin,agent
+      io.rancher.container.agent_service.drain_provider: 'true'
+      io.rancher.container.create_agent: 'true'
+  redis:
+    image: redis:alpine
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  consul:
+    image: consul
+    ports:
+    - 8500:8500/tcp
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always

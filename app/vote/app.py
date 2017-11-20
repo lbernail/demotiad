@@ -28,15 +28,15 @@ def get_consul():
 def get_redis():
     if not hasattr(g, 'redis'):
         consul=get_consul()
+        redis_host = 'redis'
+        redis_port = '6379'
         if consul is not None:
             (index,redis_svc) = consul.catalog.service('redis')
-            redis_host = redis_svc[0]["ServiceAddress"]
-            if redis_host == "":
-                redis_host = redis_svc[0]["Address"]
-            redis_port = redis_svc[0]["ServicePort"]
-        else:
-             redis_host = 'redis'
-             redis_port = '6379'
+            if len(redis_svc)>0:
+                redis_host = redis_svc[0]["ServiceAddress"]
+                if redis_host == "":
+                    redis_host = redis_svc[0]["Address"]
+                redis_port = redis_svc[0]["ServicePort"]
 
         g.redis = Redis(host=redis_host, port=redis_port, db=0, socket_timeout=5)
     return g.redis
